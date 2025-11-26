@@ -2,6 +2,13 @@ import {useState, useEffect} from "react"
 import axios from "axios"
 import "./style.css"
 
+const baseUrl = '/api/notes'
+
+const getAll = () => {
+  const request = axios.get(baseUrl)
+  return request.then(response => response.data)
+}
+
 const ErrorNotification = ({message}) => {
   if (!message) return null
   return <div className="errorNotification">{message}</div>
