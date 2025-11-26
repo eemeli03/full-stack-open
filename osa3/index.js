@@ -6,6 +6,7 @@ const cors = require('cors')
 app.use(cors())
 app.use(morgan('tiny'))
 app.use(express.json())
+app.use(express.static('dist'))
 
 let persons = [
     {
@@ -36,7 +37,7 @@ app.get("/api/persons/:id", (request, response) => {
     if (person) {
         response.json(person)
     } else {
-        response.send(`No person found with id ${id}`)
+        return response.status(404).json({ error: `No person found with id ${id}` })
     }
 });
 
@@ -44,14 +45,12 @@ app.delete('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
   const idExist = persons.some(p => p.id === id)
 
-  if (idExist) {
-    persons = persons.filter((person) => person.id !== id)
-    response.send(`id ${id} deleted successfully`)
-    response.status(204).end()
-  } else {
-    response.send(`id ${id} cannot be found from the json`)
-    response.status(204).end()
+  if (!idExist) {
+    return response.status(404).json({ error: `id ${id} cannot be found` })
   }
+
+  persons = persons.filter((person) => person.id !== id)
+  return response.status(204).end()
 })
 
 app.post("/api/persons/", (request, response) => {
